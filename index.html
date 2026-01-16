@@ -10,7 +10,7 @@
 </head>
 <body>
     <header>
-        <h1>Blackjack Simulator for Casio</h1>
+        <h1>Blackjack</h1>
     </header>
     <main>
         <section id="game-area">
@@ -25,10 +25,14 @@
                 <div class="total">Total: <span id="player-total">0</span></div>
             </div>
         </section>
+        <section id="play-area">
+        <canvas id="table-canvas">
+            Failed to load canvas.
+        </canvas>
+        </section>
         <section id="controls">
             <button id="hit-button">Hit</button>
             <button id="stand-button">Stand</button>
-            <button id="new-game-button">New Game</button>
         </section>
         <section id="message-area">
             <p id="message"></p>
