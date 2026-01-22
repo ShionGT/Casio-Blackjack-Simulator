@@ -277,12 +277,14 @@ class Table {
 
         this.width = width;
         this.height = height;
+        this.isGameOver = false;
     }
 
     reset() {
         this.deck = new Deck();
         this.dealer.resetHand();
         this.player.resetHand();
+        this.isGameOver = false;
     }
 
     // update the game action
@@ -292,6 +294,9 @@ class Table {
             // dealer's turn
             while (this.dealer.getHandValue() < 17) {
                 this.dealer.drawCard();
+            }
+            if (!this.dealer.isWaiting() && !this.player.isWaiting()) {
+                this.isGameOver = true;
             }
         }
 
@@ -310,7 +315,7 @@ class Table {
 
             // flat numbers
             card.setSize(cardWidth, cardHeight);
-            card.setSpeed(this.width / 30); // adjust speed based on canvas size
+            card.setSpeed(this.width / 32); // adjust speed based on canvas size
 
             card.setGoalPosition(50 + i * (card.getWidth() + 10), dealerY);
             card.process();
@@ -361,6 +366,25 @@ class Table {
         for (let i = 0; i < this.player.hand.length; i++) {
             const card = this.player.hand[i];
             card.draw(ctx);
+        }
+
+        if (this.isGameOver && !this.player.isWaiting() && !this.dealer.isWaiting()) {
+            // display game over message
+            ctx.fillStyle = "white";
+            ctx.font = "14px Arial";
+            let message = "";
+            if (this.player.isBusted()) {
+                message = "21点を超えて失格。";
+            } else if (this.dealer.isBusted()) {
+                message = "相手が21点を超えて失格。勝ち！";
+            } else if (this.player.hasWonAgainst(this.dealer)) {
+                message = "勝ち！";
+            } else if (this.player.hasTiedWith(this.dealer)) {
+                message = "Push!";
+            } else {
+                message = "負け";
+            }
+            ctx.fillText(message, this.width / 2 - 100, this.height - 25);
         }
     }
 }
