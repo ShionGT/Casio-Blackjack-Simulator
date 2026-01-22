@@ -65,7 +65,7 @@ class Card {
         const deltaX = this.goalX - this.x;
         const deltaY = this.goalY - this.y;
 
-        if (deltaX < this.speed && deltaY < this.speed) {
+        if (Math.abs(deltaX) < this.speed / 2 && Math.abs(deltaY) < this.speed / 2) {
             this.needsWait = false;
             return;
         } else {
@@ -138,7 +138,7 @@ class Deck {
 class Player {
     constructor(deck) {
         this.deck = new Deck();
-        this.hand = [this.deck.dealCard(), this.deck.dealCard()];
+        this.hand = [];
 
         this.isStanding = false;
 
@@ -177,12 +177,8 @@ class Player {
         this.isStanding = true;
     }
 
-    isStanding() {
-        return this.isStanding;
-    }
-
     resetHand() {
-        this.hand = [this.deck.dealCard(), this.deck.dealCard()];
+        this.hand = [];
     }
 
     // Money management
@@ -292,6 +288,17 @@ class Table {
     // update the game action
     update() {
 
+        if (this.player.isStanding) {
+            // dealer's turn
+            while (this.dealer.getHandValue() < 17) {
+                this.dealer.drawCard();
+            }
+        }
+
+        if (this.player.isBusted()) {
+            this.player.stand();
+        }
+
         // card sizing
         const cardWidth = this.width / 15;
         const cardHeight = cardWidth * 1.5;
@@ -325,7 +332,9 @@ class Table {
 
 
         document.getElementById("player-total").innerText = this.player.getHandValue();
-        document.getElementById("dealer-total").innerText = this.dealer.getHandValue();
+        if (this.player.isBusted() || this.player.isStanding) {
+            document.getElementById("dealer-total").innerText = this.dealer.getHandValue();
+        }
 
     }
 
